@@ -1,0 +1,49 @@
+name: Build Spring Boot App with Gradle
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    name: Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Give permission to Gradle wrapper
+        run: chmod +x gradlew
+
+      - name: Run Tests
+        run: ./gradlew test -Dspring.profiles.active=test
+
+  build:
+    name: Build Application
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Give permission to Gradle wrapper
+        run: chmod +x gradlew
+
+      - name: Build without Tests
+        run: ./gradlew clean build -x test
